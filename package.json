@@ -1,0 +1,25 @@
+{
+  "name": "trending-prompt-be",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Shivam-Batham/trending-prompt-be#readme",
+  "bugs": {
+    "url": "https://github.com/Shivam-Batham/trending-prompt-be/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shivam-Batham/trending-prompt-be.git"
+  },
+  "license": "ISC",
+  "author": "shivam-batham",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
