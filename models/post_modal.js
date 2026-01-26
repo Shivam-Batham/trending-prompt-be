@@ -47,6 +47,10 @@ const PostSchema = new mongoose.Schema(
         required:true
     },
 
+    author:{
+      type:string,
+    },
+
     is_featured:{
         type:Boolean,
         default:false
