@@ -29,7 +29,7 @@ export async function updatePost(req,res){
     }
 }
 
-export async function UpdateAllPosts(req,res) {
+export async function updateAllPosts(req,res) {
     try {
         
     } catch (error) {
