@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-import validator from "validator"
+import validator from "validator";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -8,8 +10,8 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       min: [1, "Name must be at least 1 character long."],
       max: [150, "Name cannot exceed 100 characters"],
-      index:true,
-      trim:true
+      index: true,
+      trim: true,
     },
     email: {
       type: String,
@@ -17,10 +19,10 @@ const UserSchema = new mongoose.Schema(
       min: [1, "Name must be at least 1 character long."],
       max: [50, "Name cannot exceed 100 characters"],
       unique: true,
-      trim:true,
-      index:true,
-      lowercase:true,
-      validate:[validator.isEmail,'Invalid email format.']
+      trim: true,
+      index: true,
+      lowercase: true,
+      validate: [validator.isEmail, "Invalid email format."],
     },
     password: {
       type: String,
@@ -29,7 +31,7 @@ const UserSchema = new mongoose.Schema(
       max: [30, "Password cannot exceed 30 characters"],
     },
 
-    passwordChangedAt:Date,
+    passwordChangedAt: Date,
 
     contact: {
       type: String,
@@ -40,7 +42,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
-      index:true
+      index: true,
     },
 
     permissions: [
@@ -77,7 +79,7 @@ const UserSchema = new mongoose.Schema(
       url: String,
     },
 
-    bookmarks:[],
+    bookmarks: [],
 
     access_token: {
       type: String,
@@ -88,5 +90,41 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  return next();
+});
+
+UserSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(this.password, password);
+};
+
+UserSchema.methods.genrateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      name: this.name,
+      email: this.email,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    },
+  );
+};
+
+UserSchema.methods.genrateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      name: this.name,
+      email: this.email,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESS_TOKEN_EXPIRY },
+  );
+};
 
 export default User = mongoose.model("User", UserSchema);

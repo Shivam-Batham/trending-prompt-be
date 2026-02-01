@@ -6,7 +6,7 @@ export async function createUser(req, res) {
     const { email, password, name } = req.body;
     if (!(email && password && name)) {
       return res.status(400).json({
-        status: false,
+        success: false,
         message: "All feilds are required.",
       });
     }
@@ -14,7 +14,7 @@ export async function createUser(req, res) {
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({
-        status: false,
+        success: false,
         message: "User already exists.",
       });
     }
@@ -30,7 +30,7 @@ export async function createUser(req, res) {
     const { password: _, ...userWithoutPassword } = user.toObject();
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "user created successfully.",
       data: userWithoutPassword,
     });
@@ -49,7 +49,7 @@ export async function getUser(req, res) {
 
     if (!id) {
       return res.status(400).json({
-        status: false,
+        success: false,
         message: "user id is required.",
       });
     }
@@ -57,13 +57,13 @@ export async function getUser(req, res) {
     const existingUser = await User.findById(id).select("-password");
     if (!existingUser) {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "user does not exists.",
       });
     }
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "user found",
       data: existingUser,
     });
@@ -80,7 +80,7 @@ export async function getAllUser(req, res) {
   try {
     if (!req?.user || !req.user.role !== "admin") {
       return res.status(403).json({
-        status: false,
+        success: false,
         message: "Access denied.",
       });
     }
@@ -98,7 +98,7 @@ export async function getAllUser(req, res) {
     const totalUsers = await User.countDocuments();
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "Users fetched successfully",
       total: totalUsers,
       page,
@@ -114,24 +114,62 @@ export async function getAllUser(req, res) {
   }
 }
 
-export async function updateUser(params) {
+export async function updateUser(req, res) {
   try {
-  } catch (error) {}
+    const { name, contact, id } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "name is required.",
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name: name,
+        },
+      },
+      { new: true },
+    );
+
+    if(!user){
+      return res.status(403).json({
+        success:false,
+        message:'user not found.'
+      })
+    }
+
+    return res.status(200).json({
+      success:true,
+      message:"user updated succesfully.",
+      data:user
+    })
+
+  } catch (error) {
+    console.error("Error while updating users.", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 }
 
-export async function deleteUser(req,res) {
+export async function deleteUser(req, res) {
   try {
     const { id } = req.params;
     if (!id) {
       return res.status(400).json({
-        status: false,
+        success: false,
         message: "user id is required.",
       });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        status: false,
+        success: false,
         message: "Invalid user id.",
       });
     }
@@ -144,13 +182,13 @@ export async function deleteUser(req,res) {
 
     if (!user) {
       return res.status(404).json({
-        status: false,
+        success: false,
         message: "user not found.",
       });
     }
 
     return res.status(200).json({
-      status: true,
+      success: true,
       message: "user deactivated successfully.",
     });
   } catch (error) {
@@ -159,5 +197,13 @@ export async function deleteUser(req,res) {
       success: false,
       message: "Internal server error",
     });
+  }
+}
+
+export async function updatePassword(req,res) {
+  try {
+    
+  } catch (error) {
+    
   }
 }
