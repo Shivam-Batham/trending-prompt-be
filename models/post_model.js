@@ -58,7 +58,7 @@ const PostSchema = new mongoose.Schema(
 
     status:{
         type:string,
-        enum:['active','hidden','deleted']
+        enum:['active','deleted','draft']
     },
     is_verified:Boolean
 
