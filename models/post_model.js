@@ -27,7 +27,7 @@ const PostSchema = new mongoose.Schema(
       type: String,
     },
     tags:{
-        type:[string],
+        type:[String],
         index:true,
         default:[]
     },
@@ -48,7 +48,7 @@ const PostSchema = new mongoose.Schema(
     },
 
     author:{
-      type:string,
+      type:String,
     },
 
     is_featured:{
@@ -57,7 +57,7 @@ const PostSchema = new mongoose.Schema(
     },
 
     status:{
-        type:string,
+        type:String,
         enum:['active','deleted','draft']
     },
     is_verified:Boolean
