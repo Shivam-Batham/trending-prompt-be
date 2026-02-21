@@ -1,9 +1,13 @@
 import { Router } from "express";
 import { createUser, deleteUser, getAllUser, getUser, updateUser } from "../controllers/user_controller.js";
+import { login, logout } from "../auth/auth.js";
 
 const router = Router();
 
 router.route('/create-user').post(createUser);
+router.route('/login').post(login);
+router.route('/logout').post(logout);
+
 router.route('/get-all-user').get(getAllUser);
 router.route('/:id').get(getUser);
 router.route('/update-user/:id').put(updateUser);
