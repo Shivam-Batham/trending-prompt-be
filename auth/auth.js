@@ -17,15 +17,15 @@ export async function login(req, res) {
       });
     }
 
-    const isPasswordCorrect = await User?.isPasswordCorrect(password);
+    const isPasswordCorrect = await user?.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
       return res.status(403).json({
         success: "Incorrect password.",
       });
     }
 
-    const access_token = User?.genrateAccessToken();
-    const refresh_token = User?.genrateRefreshToken();
+    const access_token = user?.genrateAccessToken();
+    const refresh_token = user?.genrateRefreshToken();
 
     user.refreshToken = refresh_token;
     await user.save({ validateBeforeSave: false }, { new: true });
