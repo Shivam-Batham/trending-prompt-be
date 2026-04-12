@@ -15,9 +15,10 @@ export const cloudinaryFileUpload = async (localFilePath) => {
       resource_type: "auto",
     });
 
+    fs.unlinkSync(localFilePath); // remove localy saved file
     return response;
   } catch (error) {
-        fs.unlinkSync(localFilePath); // remove localy saved file
+        fs.unlinkSync(localFilePath);
         return null;
   }
 };

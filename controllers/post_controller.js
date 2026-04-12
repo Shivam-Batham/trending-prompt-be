@@ -1,4 +1,5 @@
 import Post from "../models/post_model.js";
+import { cloudinaryFileUpload } from "../utils/cloudinary.js";
 
 export async function createPost(req, res) {
   try {
@@ -7,8 +8,6 @@ export async function createPost(req, res) {
       prompt_text,
       ai_model,
       prompt_description,
-      raw_image,
-      prompt_image,
       views,
       tags,
       likes,
@@ -17,25 +16,47 @@ export async function createPost(req, res) {
       is_verified,
     } = req.body;
 
-    if (!(title && prompt_text && raw_image && prompt_image)) {
+    if (!(title && prompt_text)) {
       return res.status(400).json({
         success: false,
         message: "All feilds are required.",
       });
     }
 
+    const raw_image = req.files?.raw_image?.[0]?.path;
+    const prompt_image = req?.files?.prompt_image?.[0]?.path;
+
+    if(!(raw_image && prompt_image)){
+      return res.status(400).json({
+        success:false,
+        message:"raw or prompt image is missing."
+      })
+    }
+
+    const raw_image_url =  await cloudinaryFileUpload(raw_image);
+    const prompt_image_url = await  cloudinaryFileUpload(prompt_image);
+
+    if(!(raw_image_url && prompt_image_url)){
+      return res.status(400).json({
+        success:false,
+        message:"Image Upload failed."
+      })
+    }
+
+    console.log("request ---> ",req?.user);
+
     let post = new Post({
       title,
       ai_model,
       prompt_text,
       prompt_description,
-      raw_image,
-      prompt_image,
+      raw_image:raw_image_url.url,
+      prompt_image:prompt_image_url.url,
       tags,
       views,
       likes,
-      created_by: req?.user._id,
-      author: req?.user.name,
+      created_by: req?.user?._id,
+      author: req?.user?.name,
       is_featured,
       is_verified,
       status,
@@ -49,9 +70,10 @@ export async function createPost(req, res) {
       data: post,
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: `Internal server error: ${error}`,
     });
   }
 }
