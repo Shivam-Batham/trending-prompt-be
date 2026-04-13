@@ -42,9 +42,7 @@ export async function createPost(req, res) {
         message:"Image Upload failed."
       })
     }
-
-    console.log("request ---> ",req?.user);
-
+    
     let post = new Post({
       title,
       ai_model,
