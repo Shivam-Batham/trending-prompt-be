@@ -4,7 +4,7 @@ import User from "../models/user_model.js";
 export async function auth(req, res, next) {
   try {
     const token =
-      req.cookie?.accessToken ||
+      req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
       return res.status(401).json({
