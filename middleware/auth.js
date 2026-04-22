@@ -27,7 +27,6 @@ export async function auth(req, res, next) {
 
     
     req.user = user;
-    console.log("auth req -->",req.user,user )
     next();
   } catch (error) {
     console.log("Error in authenticating", error);

@@ -108,9 +108,11 @@ export async function getAllPosts(req, res) {
 
     const skip = (page - 1) * limit;
 
+    console.log(req.user._id)
+
     const filters = {
       status: "active",
-      _id: req?.user._id,
+      created_by: req?.user._id,
     };
 
     const [posts, totalPost] = await Promise.all([
@@ -127,6 +129,7 @@ export async function getAllPosts(req, res) {
       data: posts,
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       success: false,
       message: "Internal server error",
