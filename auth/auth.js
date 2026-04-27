@@ -27,8 +27,8 @@ export async function login(req, res) {
     const access_token = user?.genrateAccessToken();
     const refresh_token = user?.genrateRefreshToken();
 
-    user.refreshToken = refresh_token;
-    await user.save({ validateBeforeSave: false }, { new: true });
+    user.refresh_token = refresh_token;
+    await user.save({ validateBeforeSave: false });
 
     res.setHeader("Authorization", `Bearer ${access_token}`);
     res.setHeader("Refresh-token", refresh_token);
@@ -36,6 +36,7 @@ export async function login(req, res) {
     const option = {
       httpOnly: true,
       secure: true,
+      sameSite: "strict",
     };
 
     return res
@@ -57,11 +58,19 @@ export async function login(req, res) {
 
 export async function logout(req, res) {
   try {
+    const UserId = req.user._id;
+    if (!UserId) {
+      return res.status(401).json({
+        success: false,
+        message: "Logout failed.",
+      });
+    }
+
     await User.findByIdAndUpdate(
-      req.user._id,
+      UserId,
       {
         $set: {
-          refreshToken: undefined,
+          refresh_token: undefined,
         },
       },
       { new: true },

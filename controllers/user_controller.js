@@ -45,7 +45,7 @@ export async function createUser(req, res) {
 
 export async function getUser(req, res) {
   try {
-    const { id } = req.params;
+    const id  = req.user._id;
 
     if (!id) {
       return res.status(400).json({

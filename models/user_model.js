@@ -45,11 +45,10 @@ const UserSchema = new mongoose.Schema(
       index: true,
     },
 
-    permissions: [
-      {
-        type: String,
-      },
-    ],
+    location:{
+      type: String,
+      max: [30, "location cannot exceed 30 characters"],
+    },
 
     isActive: {
       type: Boolean,
@@ -64,11 +63,6 @@ const UserSchema = new mongoose.Schema(
 
     lastLogin: {
       type: Date,
-    },
-
-    refreshToken: {
-      type: String,
-      select: false,
     },
 
     resetPasswordToken: String,
