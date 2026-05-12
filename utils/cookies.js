@@ -1,16 +1,14 @@
 export function setAuthCookies(res, access_token, refresh_token){
     res.cookie("accessToken", access_token,{
         httpOnly:true,
-        sameSite:"strict",
+        sameSite:"none",
         secure:true,
-        // maxAge:process.env.ACCESS_TOKEN_EXPIRY
     })
 
     res.cookie("refreshToken", refresh_token, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "none",
     secure: true,
-    // maxAge: process.env.REFRESS_TOKEN_EXPIRY,
   });
 }
 
