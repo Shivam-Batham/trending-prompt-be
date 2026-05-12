@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import UserRouter from './routes/user_routes.js';
 import PostRouter from './routes/post_routes.js';
 import FeedRouter from './routes/feed_routes.js';
+import AuthRouter from './routes/auth_routes.js';
 import cors from "cors";
 import cookieParser from "cookie-parser"
 
@@ -20,6 +21,9 @@ app.use(cors({
 
 app.use(express.json({limit:'1000kb'}));
 app.use(cookieParser());
+
+/* Auth Route */ 
+app.use('/api/auth',AuthRouter)
 
 /* User Route */ 
 app.use('/api/user',UserRouter);

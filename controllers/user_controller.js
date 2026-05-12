@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "../models/user_model.js";
+import User from "../models/user.js";
 
 export async function createUser(req, res) {
   try {
@@ -45,7 +45,7 @@ export async function createUser(req, res) {
 
 export async function getUser(req, res) {
   try {
-    const id  = req.user._id;
+    const id  = req.user.userId;
 
     if (!id) {
       return res.status(400).json({
@@ -54,7 +54,7 @@ export async function getUser(req, res) {
       });
     }
 
-    const existingUser = await User.findById(id).select("-password");
+    const existingUser = await User.findById(id).select("-password -refresh_token");
     if (!existingUser) {
       return res.status(404).json({
         success: false,

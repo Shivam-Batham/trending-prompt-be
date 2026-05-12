@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user_model.js";
+import User from "../models/user.js";
 
 export async function auth(req, res, next) {
   try {
@@ -14,19 +14,24 @@ export async function auth(req, res, next) {
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user = await User.findById(decodedToken._id).select(
-      "-password -refreshToken",
-    );
-
-    if (!user) {
-      return res.status(401).json({
-        success: true,
-        message: "Invalid access token",
-      });
-    }
-
     
-    req.user = user;
+    
+
+    // const user = await User.findById(decodedToken._id).select(
+    //   "-password -refreshToken",
+    // );
+
+    // if (!user) {
+    //   return res.status(401).json({
+    //     success: true,
+    //     message: "Invalid access token",
+    //   });
+    // }
+
+    console.log("token - >", decodedToken)
+    
+    req.user = decodedToken;
+    // req.user = user;
     next();
   } catch (error) {
     console.log("Error in authenticating", error);

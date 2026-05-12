@@ -75,12 +75,6 @@ const UserSchema = new mongoose.Schema(
 
     bookmarks: [],
 
-    access_token: {
-      type: String,
-    },
-    refresh_token: {
-      type: String,
-    },
   },
   { timestamps: true },
 );
@@ -95,31 +89,31 @@ UserSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password,this.password);
 };
 
-UserSchema.methods.genrateAccessToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-      name: this.name,
-      email: this.email,
-    },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    },
-  );
-};
+// UserSchema.methods.genrateAccessToken = function () {
+//   return jwt.sign(
+//     {
+//       _id: this._id,
+//       name: this.name,
+//       email: this.email,
+//     },
+//     process.env.ACCESS_TOKEN_SECRET,
+//     {
+//       expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+//     },
+//   );
+// };
 
-UserSchema.methods.genrateRefreshToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-      name: this.name,
-      email: this.email,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESS_TOKEN_EXPIRY },
-  );
-};
+// UserSchema.methods.genrateRefreshToken = function () {
+//   return jwt.sign(
+//     {
+//       _id: this._id,
+//       name: this.name,
+//       email: this.email,
+//     },
+//     process.env.REFRESH_TOKEN_SECRET,
+//     { expiresIn: process.env.REFRESS_TOKEN_EXPIRY },
+//   );
+// };
 
 const User = mongoose.model("User", UserSchema);
 export default User;

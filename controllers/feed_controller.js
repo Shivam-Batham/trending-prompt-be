@@ -1,4 +1,4 @@
-import Post from "../models/post_model.js";
+import Post from "../models/post.js";
 export async function fetchFeed(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;

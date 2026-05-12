@@ -1,4 +1,4 @@
-import Post from "../models/post_model.js";
+import Post from "../models/post.js";
 import { cloudinaryFileUpload } from "../utils/cloudinary.js";
 
 export async function createPost(req, res) {
@@ -8,9 +8,7 @@ export async function createPost(req, res) {
       prompt_text,
       ai_model,
       prompt_description,
-      views,
       tags,
-      likes,
       is_featured,
       status,
       is_verified,
@@ -33,8 +31,7 @@ export async function createPost(req, res) {
       })
     }
 
-    const raw_image_url =  await cloudinaryFileUpload(raw_image);
-    const prompt_image_url = await  cloudinaryFileUpload(prompt_image);
+    const [raw_image_url, prompt_image_url] =  await Promise.all([cloudinaryFileUpload(raw_image), cloudinaryFileUpload(prompt_image)]) ;
 
     if(!(raw_image_url && prompt_image_url)){
       return res.status(400).json({
@@ -43,24 +40,19 @@ export async function createPost(req, res) {
       })
     }
     
-    let post = new Post({
+    const post = await Post.create({
       title,
       ai_model,
       prompt_text,
       prompt_description,
-      raw_image:raw_image_url.url,
-      prompt_image:prompt_image_url.url,
+      raw_image: raw_image_url.url,
+      prompt_image: prompt_image_url.url,
       tags,
-      views,
-      likes,
-      created_by: req?.user?._id,
-      author: req?.user?.name,
-      is_featured,
-      is_verified,
-      status,
+      created_by: req.user.userId,
+      is_featured: Boolean(is_featured),
+      status: status || "active",
     });
 
-    post = await post.save();
 
     return res.status(201).json({
       success: true,
