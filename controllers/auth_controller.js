@@ -61,7 +61,7 @@ export async function login(req, res) {
 export async function refreshSession(req, res) {
   try {
     const refreshToken = req.cookies.refreshToken;
-
+   
     if (!refreshToken) {
       return res.status(400).json({
         success: false,
@@ -70,23 +70,24 @@ export async function refreshSession(req, res) {
     }
 
     const payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-
+    
     const session = await Session.findOne({
       sessionId: payload.sessionId,
+      userId:payload.userId,
       revoked: false,
     });
 
     if (!session) {
-      return res.status(401).json({
+      return res.status(404).json({
         success: false,
-        message: "Invalid session.",
+        message: "Session not found.",
       });
     }
 
-    if (session.expiresAt < new Date()) {
-      return res.status(403).json({
-        success: false,
-        message: "Invalid session.",
+    if(session.expiresAt > new Date() && !session.revoked){
+       return res.status(200).json({
+        success: true,
+        message: "Session found.",
       });
     }
 
@@ -94,7 +95,7 @@ export async function refreshSession(req, res) {
 
     const newSessionId = crypto.randomUUID();
 
-    await Session.create({
+    let response = await Session.create({
       userId: payload.userId,
       sessionId: newSessionId,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),

@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import User from "../models/user.js";
+import { cloudinaryFileUpload } from "../utils/cloudinary.js";
+import Post from "../models/post.js";
 
 export async function createUser(req, res) {
   try {
@@ -54,7 +56,7 @@ export async function getUser(req, res) {
       });
     }
 
-    const existingUser = await User.findById(id).select("-password -refresh_token");
+    const [existingUser, postCount] = await Promise.all([ User.findById(id).select("-password -refresh_token"), Post.countDocuments({created_by:id})])
     if (!existingUser) {
       return res.status(404).json({
         success: false,
@@ -65,7 +67,9 @@ export async function getUser(req, res) {
     return res.status(200).json({
       success: true,
       message: "user found",
-      data: existingUser,
+      data: {...existingUser.toObject(),
+        postCount
+      },
     });
   } catch (error) {
     console.error("Error while fetching user.", error);
@@ -116,27 +120,32 @@ export async function getAllUser(req, res) {
 
 export async function updateUser(req, res) {
   try {
-    const { name, contact, id } = req.body;
-
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "name is required.",
-      });
+    const { name, email } = req.body;
+    const id = req.user.userId;
+   
+    const avatar = req.files?.avatar[0].path;
+    let avatarObj = null;
+    if(avatar){
+      const profile  = await cloudinaryFileUpload(avatar);
+       avatarObj = {
+        public_id : profile?.public_id,
+        url : profile?.url
+      }
     }
-
+    
     const user = await User.findByIdAndUpdate(
       id,
       {
         $set: {
           name: name,
+          avatar: avatarObj
         },
       },
       { new: true },
     );
 
     if(!user){
-      return res.status(403).json({
+      return res.status(404).json({
         success:false,
         message:'user not found.'
       })

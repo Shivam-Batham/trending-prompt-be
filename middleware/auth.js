@@ -28,7 +28,6 @@ export async function auth(req, res, next) {
     //   });
     // }
 
-    console.log("token - >", decodedToken)
     
     req.user = decodedToken;
     // req.user = user;
